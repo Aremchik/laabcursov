@@ -1,0 +1,27 @@
+services:
+  flight_telegram_bot:
+    build: .
+    container_name: flight_telegram_bot
+    env_file: .env
+    volumes:
+      - ./models:/app/models
+    command: python3 app/bot.py
+    depends_on:
+      train_flight_intent_model:
+        condition: service_completed_successfully
+      train_flight_dialogues_model:
+        condition: service_completed_successfully
+
+  train_flight_intent_model:
+    build: .
+    container_name: train_flight_intent_model
+    volumes:
+      - ./models:/app/models
+    command: python3 app/train_intent_model.py
+
+  train_flight_dialogues_model:
+    build: .
+    container_name: train_flight_dialogues_model
+    volumes:
+      - ./models:/app/models
+    command: python3 app/train_dialogues_model.py
